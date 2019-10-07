@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, CheckBox } from 'react-native';
 import { Button } from 'native-base'
 import Icon from 'react-native-vector-icons/AntDesign'
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       Items: [
-        { id: 1, name: 'work' },
-        { id: 2, name: 'Swim' },
-        { id: 3, name: 'Study' },
-        { id: 4, name: 'Sleep' },
-        { id: 5, name: 'run' }
+        { id: 1, name: 'work', status: false },
+        { id: 2, name: 'Swim', status: false },
+        { id: 3, name: 'Study', status: false },
+        { id: 4, name: 'Sleep', status: false },
+        { id: 5, name: 'run', status: false }
       ],
       value: ''
     };
   }
   handleSubmit() {
     let i = this.state.Items.length
-    this.state.Items.push(
-      {
+    this.setState((state) => {
+      const list = state.Items.push({
         id: i + 1, name: this.state.value
-      }
-    )
+      })
+      return { list, value: '' }
+    })
     this.setState({ value: '' })
   }
 
@@ -31,10 +33,23 @@ class App extends Component {
       if (this.state.Items[i].id == (id)) {
         this.setState((state) => {
           const list = state.Items.splice(i, 1)
-
           return list
         })
       }
+    }
+  }
+
+  handleCheckbox(id) {
+    if (this.state.Items[id - 1].status == false) {
+      this.setState((state) => {
+        const list = state.Items[id - 1].status = true
+        return list
+      })
+    } else {
+      this.setState((state) => {
+        const list = state.Items[id - 1].status = false
+        return list
+      })
     }
   }
 
@@ -53,12 +68,16 @@ class App extends Component {
             onPress={() => this.handleSubmit()}
           >
             <Text style={{ marginHorizontal: 20 }}>Add</Text>
-
           </Button>
         </View>
         <View>
           {this.state.Items.map((data) =>
             <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+              <CheckBox
+                value={data.status}
+                onValueChange={() => this.handleCheckbox(data.id)}
+                style={{ marginTop: 15 }}
+              />
               <Text style={{ padding: 5, flex: 8, paddingVertical: 20 }}>{data.name}</Text>
               <Button
                 onPress={() => this.handleDelete(data.id)}
